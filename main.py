@@ -8,23 +8,32 @@ import os
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Sniffer")
+    parser = argparse.ArgumentParser(description="Сетевой сниффер")
     parser.add_argument(
-        "-i", "--interface", help="Interface(s) to sniff on", required=False, nargs="+"
+        "-i",
+        "--interface",
+        help="Интерфейсы для прослушивания",
+        required=False,
+        nargs="+",
     )
-    parser.add_argument("-o", "--output", help="Output PCAP file path")
-    parser.add_argument("-f", "--filter", help="BPF Filter string (e.g. 'tcp port 80')")
+    parser.add_argument("-o", "--output", help="Путь к выходному файлу PCAP")
     parser.add_argument(
-        "-l", "--list-interfaces", action="store_true", help="List available interfaces"
+        "-f", "--filter", help="Строка фильтра BPF (например, 'tcp port 80')"
     )
-    parser.add_argument("bpf_filter", nargs="*", help="BPF Filter expression")
+    parser.add_argument(
+        "-l",
+        "--list-interfaces",
+        action="store_true",
+        help="Вывести список доступных интерфейсов",
+    )
+    parser.add_argument("bpf_filter", nargs="*", help="Выражение фильтра BPF")
 
     args = parser.parse_args()
 
     interfaces = pcapy.findalldevs()
 
     if args.list_interfaces:
-        print("Available interfaces:")
+        print("Доступные интерфейсы:")
         for iface in interfaces:
             print(f" - {iface}")
         sys.exit(0)
@@ -32,15 +41,15 @@ def main():
     target_interfaces = args.interface
     if not target_interfaces:
         if not interfaces:
-            print("No interfaces found.")
+            print("Интерфейсы не найдены.")
             sys.exit(1)
-        print(f"No interface specified, using default: {interfaces[0]}")
+        print(f"Интерфейс не указан, используется по умолчанию: {interfaces[0]}")
         target_interfaces = [interfaces[0]]
 
     for iface in target_interfaces:
         if iface not in interfaces:
             print(
-                f"Warning: Interface '{iface}' might not be in the discovered list. Available: {interfaces}"
+                f"Предупреждение: Интерфейс '{iface}' может отсутствовать в списке обнаруженных. Доступные: {interfaces}"
             )
 
     filter_parts = []
@@ -51,7 +60,7 @@ def main():
 
     final_filter = " ".join(filter_parts).strip()
     if final_filter:
-        print(f"[*] Filter: {final_filter}")
+        print(f"Фильтр: {final_filter}")
 
     threads = []
 
@@ -71,9 +80,9 @@ def main():
 
     try:
         while True:
-            time.sleep(0.5)
+            time.sleep(1)
     except KeyboardInterrupt:
-        print("\n[*] Stopping all sniffing sessions...")
+        print("\nОстановка всех сессий захвата...")
         sys.exit(0)
 
 

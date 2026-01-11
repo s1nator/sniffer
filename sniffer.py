@@ -67,7 +67,7 @@ class Sniffer:
 
         ts = header.getts()
         print(
-            f"\n[+] Packet captured at {time.ctime(ts[0])}.{ts[1]} | Length: {header.getlen()}"
+            f"\nПакет захвачен в {time.ctime(ts[0])}.{ts[1]} | Длина: {header.getlen()}"
         )
 
         try:
@@ -85,31 +85,31 @@ class Sniffer:
                     print(f"\tUDP: {src_port} -> {dst_port} | Length: {length}")
 
             elif eth_proto == 0x0806:
-                print("\tARP Packet")
+                print("\tПакет ARP")
 
         except Exception as e:
-            print(f"\tError parsing packet: {e}")
+            print(f"\tОшибка парсинга пакета: {e}")
 
     def start(self):
-        print(f"[*] Starting sniffer on interface {self.interface}")
+        print(f"Запуск сниффера на интерфейсе {self.interface}")
 
         try:
             cap = pcapy.open_live(self.interface, 65536, 1, 0)
 
             if self.pcap_filter:
-                print(f"[*] Setting filter: {self.pcap_filter}")
+                print(f" Установка фильтра: {self.pcap_filter}")
                 cap.setfilter(self.pcap_filter)
 
             if self.output_file:
-                print(f"[*] Saving output to {self.output_file}")
+                print(f"Сохранение вывода в {self.output_file}")
                 self.dumper = cap.dump_open(self.output_file)
 
-            print("[*] Press Ctrl+C to stop")
+            print("Нажмите Ctrl+C для остановки")
             cap.loop(0, self.packet_handler)
 
         except pcapy.PcapError as e:
-            print(f"Error opening interface: {e}")
+            print(f"Ошибка открытия интерфейса: {e}")
             sys.exit(1)
         except KeyboardInterrupt:
-            print("\n[*] Stopping sniffer")
+            print("\nОстановка сниффера")
             sys.exit(0)
